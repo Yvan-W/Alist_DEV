@@ -56,6 +56,12 @@ jobs:
           release_name: alist_${{ env.SHA }}
           draft: false
           prerelease: false
+      - name: Compress 7-Zip and Add checksum ✔️
+        if: inputs.compression == '.7z'
+        working-directory: dist
+        run: |
+          7z a -t7z -mx=6 -m0=LZMA2 -ms=on -mmt=8 -sdel -- alist_${{ env.SHA }}.7z .\*
+          ($(Get-FileHash -Path alist_${{ env.SHA }}.7z -Algorithm SHA256).Hash.ToLower().ToString() + "  " + "alist_${{ env.SHA }}.7z") | Out-File -FilePath sha256-checksum.txt -Encoding UTF8
       - name: Upload Release Asset 📦
         id: upload_release_asset
         uses: actions/upload-release-asset@v1
@@ -63,6 +69,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/dist
+          asset_path: ${{ github.workspace }}/dist/alist_${{ env.SHA }}.7z
           asset_name: alist_${{ env.SHA }}
-          asset_content_type: application/zip
+          asset_content_type: application/7z-compression

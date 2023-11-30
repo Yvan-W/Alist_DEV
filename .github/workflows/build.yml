@@ -42,15 +42,15 @@ jobs:
           bash build.sh dev
       - name: Compress Dist Directory
         run: |
-          zip -r alist_${{ env.SHA }}.zip dist/*
+          zip -r Alist_${{ env.SHA }}.zip dist/*
       - name: Create Release 📚
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: Alist_${{ env.SHA }}.zip
-          release_name: Alist_${{ env.SHA }}.zip
+          tag_name: Alist_${{ env.SHA }}
+          release_name: Alist_${{ env.SHA }}
           draft: false
           prerelease: false
 
@@ -61,6 +61,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/Alist_${{ env.SHA }}.zip
-          asset_name: Alist_${{ env.SHA }}.zip
+          asset_path: Alist_${{ env.SHA }}.zip
+          asset_name: Alist_${{ env.SHA }}
           asset_content_type: application/zip

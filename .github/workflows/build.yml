@@ -41,8 +41,28 @@ jobs:
         run: |
           bash build.sh dev
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
+      - name: Compress Dist Directory
+        run: |
+          zip -r Alist_${{ env.SHA }}.zip dist/*
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: alist_${{ env.SHA }}
-          path: dist
+          tag_name: Alist_${{ env.SHA }}
+          release_name: Alist_${{ env.SHA }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload_release_asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: Alist_${{ env.SHA }}.zip
+          asset_name: Alist_${{ env.SHA }}
+          asset_content_type: application/zip
